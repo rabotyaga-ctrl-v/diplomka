@@ -13,10 +13,10 @@ load_dotenv()
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 STABILITY_API_KEY = os.getenv("STABILITY_API_KEY")
 
-if not OPENAI_API_KEY:
-    raise RuntimeError("Не найден OPENAI_API_KEY в переменных окружения. Проверьте файл .env")
-if not STABILITY_API_KEY:
-    raise RuntimeError("Не найден STABILITY_API_KEY в переменных окружения. Проверьте файл .env")
+if not OPENAI_API_KEY or STABILITY_API_KEY == "placeholder_key_for_now":
+    print("Внимание: используется заглушка OPENAI_API_KEY. Замените на реальный ключ.")
+#if not STABILITY_API_KEY:
+    #raise RuntimeError("Не найден STABILITY_API_KEY в переменных окружения. Проверьте файл .env")
 
 openai.api_key = OPENAI_API_KEY
 
