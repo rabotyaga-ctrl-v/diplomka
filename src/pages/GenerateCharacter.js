@@ -32,6 +32,7 @@ export default function GenerateCharacter() {
     const [generatedPrompt, setGeneratedPrompt] = useState('');
     const [imageBase64, setImageBase64] = useState(null);
     const [showResult, setShowResult] = useState(false);
+    const [saving, setSaving] = useState(false);
 
     const promptInstructions = `
 Как написать хороший промпт для изображения персонажа:
@@ -101,6 +102,38 @@ export default function GenerateCharacter() {
         link.click();
     };
 
+    const handleSaveProject = async () => {
+        if (!imageBase64) {
+            alert('Нет изображения для сохранения.');
+            return;
+        }
+        setSaving(true);
+        try {
+            // Пример запроса на сохранение в "Мои проекты"
+            const response = await fetch('/save-character-project/', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    description,
+                    style: selectedStyle,
+                    prompt: generatedPrompt,
+                    image_base64: imageBase64,
+                }),
+            });
+            const data = await response.json();
+            if (response.ok) {
+                alert('Проект успешно сохранён!');
+            } else {
+                alert(data.error || 'Ошибка при сохранении проекта.');
+            }
+        } catch (error) {
+            console.error(error);
+            alert('Ошибка при подключении к серверу.');
+        } finally {
+            setSaving(false);
+        }
+    };
+
     return (
         <div className="generate-container">
             <h1 className="generate-title">Генерация персонажа</h1>
@@ -112,7 +145,7 @@ export default function GenerateCharacter() {
                 placeholder="Опишите вашего персонажа..."
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
-                disabled={loadingGenerate}
+                disabled={loadingGenerate || saving}
             />
 
             <div className="input-group" style={{ marginTop: 20 }}>
@@ -123,7 +156,7 @@ export default function GenerateCharacter() {
                             key={id}
                             className={`generate-template-box ${selectedStyle === id ? 'selected' : ''}`}
                             title={tooltip}
-                            onClick={() => setSelectedStyle(id)}
+                            onClick={() => !loadingGenerate && !saving && setSelectedStyle(id)}
                         >
                             <img src={img} alt={label} />
                             <div>{label}</div>
@@ -133,10 +166,10 @@ export default function GenerateCharacter() {
             </div>
 
             <div className="generate-nav">
-                <button onClick={() => navigate('/')} disabled={loadingGenerate} className="generate-btn">
+                <button onClick={() => navigate('/')} disabled={loadingGenerate || saving} className="generate-btn">
                     Назад
                 </button>
-                <button onClick={handleGenerateClick} disabled={loadingGenerate} className="generate-btn">
+                <button onClick={handleGenerateClick} disabled={loadingGenerate || saving} className="generate-btn">
                     {loadingGenerate ? 'Генерация...' : 'Отправить'}
                 </button>
             </div>
@@ -151,21 +184,22 @@ export default function GenerateCharacter() {
                         style={{ maxWidth: '100%', marginTop: 20, borderRadius: 16 }}
                     />
 
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginTop: 20 }}>
-                        <button onClick={handleDownload} className="generate-btn">
+                    <div style={{ display: 'flex', gap: 10, marginTop: 20, flexWrap: 'wrap' }}>
+                        <button onClick={handleDownload} className="generate-btn" disabled={saving}>
                             Скачать изображение
+                        </button>
+
+                        <button onClick={handleSaveProject} className="generate-btn" disabled={saving}>
+                            {saving ? 'Сохранение...' : 'Сохранить в мои проекты'}
                         </button>
 
                         <button
                             onClick={handleReset}
                             className="generate-btn"
                             style={{ backgroundColor: '#ccc', color: '#000' }}
+                            disabled={saving}
                         >
                             Начать заново
-                        </button>
-
-                        <button onClick={() => navigate('/plot')} className="generate-btn">
-                            Далее
                         </button>
                     </div>
                 </div>

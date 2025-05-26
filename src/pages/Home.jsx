@@ -19,7 +19,6 @@ const works = [
     { id: 14, image: "/images/work10.png", description: "Эко-бренд6, построенный на легенде о новом мире." },
 ];
 
-
 const Home = () => {
     const navigate = useNavigate();
 
@@ -29,14 +28,10 @@ const Home = () => {
                 <span className="tab" onClick={() => navigate("/generate-character")}>
                     Персонаж
                 </span>
-                <span className="tab" onClick={() => navigate("/generate-plot")}>
-                    Сюжет
-                </span>
                 <span className="tab" onClick={() => navigate("/my-projects")}>
-          Мои проекты
+                    Мои проекты
                 </span>
             </nav>
-
 
             <main className="main-content">
                 <h1 className="headline">Создай свою историю</h1>
@@ -45,7 +40,7 @@ const Home = () => {
                 </p>
 
                 <div className="button-group">
-                    <button className="btn" onClick={() => navigate("/character")}>
+                    <button className="btn" onClick={() => navigate("/choise")}>
                         Начать
                     </button>
                     <button className="btn" onClick={() => navigate("/login")}>
@@ -54,7 +49,6 @@ const Home = () => {
                 </div>
             </main>
 
-            {/* Работы */}
             <section className="portfolio">
                 {works.map((work) => (
                     <div key={work.id} className="work-item">
